@@ -1,9 +1,22 @@
+#ifndef __SMARS_ENGINE_H__
+#define __SMARS_ENGINE_H__
+
 #include <AFMotor.h>
 
+#define L_MOTOR 3  // Left motor number on the motor shield.
+#define R_MOTOR 4  // Right motor number on the motor shield.
+
+// This class provides high level Engine interface for SMARS robot.
 class Engine {
   public:
+    // Create default SMARS engine.
     Engine();
-    Engine(float leftK, float rightK);
+    
+	// Create default SMARS engine using the specified speed scale
+	// for left and right motors. The scale must be in the range [0..1]
+	Engine(float leftK, float rightK);
+	
+	
     void accelerate(int delta = 2);
     void turn(int delta = 1);
     void drive(int speed);
@@ -24,3 +37,4 @@ class Engine {
     float      d_speed[2];         // Current logical speed per motor;
 };
 
+#endif

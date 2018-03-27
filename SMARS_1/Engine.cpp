@@ -2,23 +2,35 @@
 
 #include <Arduino.h>
 
-// Comment out to enable the motors. Used for testing the PID
-//#define DISABLE_ENGINE
-
 #define MIN_SPEED 0
 #define MAX_SPEED 250
 
-// Motor identifiers.
+// Internal motor indexes.
 #define LEFT 0
 #define RIGHT 1
 
 Engine::Engine()
-: d_motorL(3, MOTOR34_64KHZ),
-  d_motorR(4, MOTOR34_64KHZ),
+: d_motorL(L_MOTOR, MOTOR34_64KHZ),
+  d_motorR(R_MOTOR, MOTOR34_64KHZ),
   d_carSpeed(0.0)
 {
-  d_tk[LEFT] = 1.0;     // [0 .. 1] If one of the motors is slower, reduce th
-  d_tk[RIGHT] = 0.95;
+  d_tk[LEFT] = 1.0;
+  d_tk[RIGHT] = 1.0;
+  
+  d_speed[LEFT] = 0.0;
+  d_speed[RIGHT] = 0.0;
+  
+  d_motorL.run(RELEASE);
+  d_motorR.run(RELEASE);
+}
+
+Engine::Engine(float leftK, float rightK)
+: d_motorL(L_MOTOR, MOTOR34_64KHZ),
+  d_motorR(R_MOTOR, MOTOR34_64KHZ),
+  d_carSpeed(0.0)
+{
+  d_tk[LEFT] = leftK;
+  d_tk[RIGHT] = rightK;
   
   d_speed[LEFT] = 0.0;
   d_speed[RIGHT] = 0.0;
@@ -85,10 +97,8 @@ Engine::drive(int speed)
 void
 Engine::go()
 { 
-#ifndef DISABLE_ENGINE
   d_motorL.setSpeed(getMotorSpeed(d_speed[LEFT]));
   d_motorR.setSpeed(getMotorSpeed(d_speed[RIGHT]));
   d_motorL.run(getMotorCommand(d_speed[LEFT]));
   d_motorR.run(getMotorCommand(d_speed[RIGHT]));
-#endif
 }
