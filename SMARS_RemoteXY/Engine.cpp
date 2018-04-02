@@ -27,11 +27,31 @@ Engine::init()
   pinMode(rightMotorDir,   OUTPUT);
 }
 
+void Engine::set_balance(int8_t balance)
+{
+  if (balance == 0) {
+    d_tk[LEFT]  = 1.0;
+    d_tk[RIGHT] = 1.0;
+    return;
+  }
+  
+  if(balance < 0) {
+    d_tk[LEFT] = 1.0 + (float)balance/500.0;
+  } else {
+    d_tk[RIGHT] = 1.0 - (float)balance/500.0;
+  }
+}
+
+void Engine::set_max_speed(int8_t max_speed)
+{
+  d_max_speed = map(max_speed, -100, 100, 800, 1024);
+}
+
 uint16_t 
 Engine::getMotorSpeed(int speed)
 {
   if (abs(speed) >= 10) {
-    return map(abs(speed), 10, 100, 200, 1000);
+    return map(abs(speed), 10, 100, 500, d_max_speed);
   }
   return 0;
 }

@@ -31,31 +31,31 @@
 #define REMOTEXY_WIFI_PASSWORD "12345678"
 #define REMOTEXY_SERVER_PORT 6377
 
-// RemoteXY configurate  
+// RemoteXY controls.  
 #pragma pack(push, 1)
 uint8_t RemoteXY_CONF[] =
-  { 255,3,0,1,0,37,0,8,24,1,
-  5,0,10,52,44,44,162,24,31,2,
-  0,20,4,22,11,134,27,31,31,79,
-  78,0,79,70,70,0,66,132,10,17,
-  42,33,35,35 }; 
+  { 255,5,0,0,0,45,0,8,24,0,
+  5,32,24,11,52,52,5,26,31,4,
+  160,23,3,53,5,1,26,2,0,1,
+  1,15,5,2,26,31,31,79,78,0,
+  79,70,70,0,4,32,90,4,5,56,
+  6,26 };
   
 // this structure defines all the variables of your control interface 
 struct {
 
-  // input variable
-  int8_t joystick_1_x; // =-100..100 x-coordinate joystick position 
-  int8_t joystick_1_y; // =-100..100 y-coordinate joystick position 
-  uint8_t switch_1; // =1 if switch ON and =0 if OFF 
+    // input variable
+  int8_t joystick_x; // =-100..100 x-coordinate joystick position 
+  int8_t joystick_y; // =-100..100 y-coordinate joystick position 
+  int8_t balance;    // =-100..100 slider position 
+  uint8_t power;     // =1 if switch ON and =0 if OFF 
+  int8_t max_speed;  // =-100..100 slider position 
 
-  // output variable
-  int8_t level_1; // =0..100 level position 
-
-  // other variable
+    // other variable
   uint8_t connect_flag;  // =1 if wire connected, else =0 
 
 } RemoteXY;
-#pragma pack(pop) 
+#pragma pack(pop)
 
 /////////////////////////////////////////////
 //           END RemoteXY include          //
@@ -76,9 +76,10 @@ void loop()
 { 
   RemoteXY_Handler ();
 
-  if (RemoteXY.switch_1) {
-    engine.drive(RemoteXY.joystick_1_y, RemoteXY.joystick_1_x);
-    RemoteXY.level_1 = map(RemoteXY.joystick_1_y, -100, 100, 0, 100);
+  if (RemoteXY.power) {
+    engine.set_balance(RemoteXY.balance);
+    engine.set_max_speed(RemoteXY.max_speed);
+    engine.drive(RemoteXY.joystick_y, RemoteXY.joystick_x);
   } else {
     engine.stop();
   }
